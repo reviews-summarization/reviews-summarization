@@ -1,4 +1,4 @@
-# Feedback summarization
+# Reviews summarization
 
 [Борда с задачами](https://github.com/orgs/feedback-summarization-project/projects/3)
 

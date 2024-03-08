@@ -1,6 +1,6 @@
 # Reviews summarization
 
-[Борда с задачами](https://github.com/orgs/feedback-summarization-project/projects/3)
+[Борда с задачами](https://github.com/orgs/reviews-summarization/projects/3)
 
 ## Getting started 
 

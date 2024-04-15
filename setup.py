@@ -25,6 +25,10 @@ setup(
 
       # testing
       "pytest",
+
+      #server
+      "flask",
+      "flask_sqlalchemy",
     ],
   }
 )

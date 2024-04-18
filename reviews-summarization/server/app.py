@@ -20,4 +20,8 @@ def no_clicked():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    import logging
+    logger = logging.getLogger('waitress')
+    logger.setLevel(logging.DEBUG)
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=8001)

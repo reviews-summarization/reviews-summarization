@@ -28,7 +28,8 @@ setup(
 
       #server
       "flask",
-      "flask_sqlalchemy",
+      "mysql-connector-python",
+      "waitress"
     ],
   }
 )

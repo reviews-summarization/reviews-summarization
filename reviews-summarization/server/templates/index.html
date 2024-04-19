@@ -9,7 +9,7 @@
     <title>Review/aspect</title>
 </head>
 <body>
-    <h1>Заголовок</h1>
+    <h1>Разметка отзывов</h1>
     <p>Вам предлагается прочитать отзыв и отметить есть ли аспект в нем</p>
 
     <table class="center" style="width:80%" >
@@ -19,8 +19,8 @@
             <th style="width:25%">Наличие</th>
         </tr>
         <tr>
-            <td>...</td>
-            <td>...</td>
+            <td> {{review}} </td>
+            <td> {{aspect}} </td>
             <td>
                 <form action="/yes_clicked" method="post">
                     <button type="submit">да</button>

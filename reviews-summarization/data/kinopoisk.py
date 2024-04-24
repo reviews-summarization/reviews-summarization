@@ -92,9 +92,9 @@ class Kinopoisk:
 
   def get_titles(self):
     titles = {}
-    for id, reviews in json.loads(Path("data.json").read_text()).items():
-      titles[id] = {
-        "name": self.film_name(id),
+    for film_id, reviews in json.loads(Path("data.json").read_text()).items():
+      titles[film_id] = {
+        "name": self.film_name(film_id),
         "reviews": reviews
       }
 
@@ -137,8 +137,6 @@ def parse_args():
 
 def main(args):
   kp = Kinopoisk(args.cookie_path.read_text().strip())
-  kp.get_titles()
-  return
   top_films_ids = kp.top_films()
   all_reviews = {}
   for id_film in top_films_ids:

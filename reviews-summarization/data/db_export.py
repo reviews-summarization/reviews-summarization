@@ -23,11 +23,12 @@ def load_reviews(cnx):
   cursor = cnx.cursor()
   new_data = []
   for k, v in data.items():
-    for x in v["reviews"][:min(len(v), 100)]:
+    for x in v["reviews"][:min(len(v["reviews"]), 100)]:
       new_data.append((int(k), v["name"], x, str(uuid.uuid4())))
   for x in new_data:
     cursor.execute(
-      "INSERT INTO reviews (film_id, film_name, review_body, id) VALUES (%s, %s, %s, %s)",
+      "INSERT INTO reviews (film_id, film_name, review_body, id) "\
+        "VALUES (%s, %s, %s, %s)",
       x
     )
   cnx.commit()

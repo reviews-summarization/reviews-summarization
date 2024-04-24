@@ -42,14 +42,19 @@ def review_page():
   (aspect_id, aspect_body) = db.get_random('aspects')
   session['review_id'] = review_id
   session['aspect_id'] = aspect_id
-  return render_template("index.html", film_name=film_name, review=text_body, aspect=aspect_body)
+  return render_template(
+    "index.html",
+    film_name=film_name,
+    review=text_body,
+    aspect=aspect_body
+  )
 
 
 def retrieve_action(number):
   db.add_record((
     session['review_id'],
     session['aspect_id'],
-    yes_clicked,
+    number,
     request.environ.get('REMOTE_ADDR', request.remote_addr)
   ))
 

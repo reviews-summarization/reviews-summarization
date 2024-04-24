@@ -5,7 +5,7 @@ import logging
 
 import mysql.connector
 import waitress
-from flask import Flask, render_template, request, url_for, session  # pylint: disable=unused-import
+from flask import Flask, render_template, redirect, request, url_for, session  # pylint: disable=unused-import
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex()
@@ -37,17 +37,6 @@ class Database:
 
 
 db = Database()
-def review_page():
-  (_, film_name, text_body, review_id) = db.get_random('reviews')
-  (aspect_id, aspect_body) = db.get_random('aspects')
-  session['review_id'] = review_id
-  session['aspect_id'] = aspect_id
-  return render_template(
-    "index.html",
-    film_name=film_name,
-    review=text_body,
-    aspect=aspect_body
-  )
 
 
 def retrieve_action(number):
@@ -61,25 +50,39 @@ def retrieve_action(number):
 
 @app.route('/')
 def index():
-  return review_page()
+  (_, film_name, text_body, review_id) = db.get_random('reviews')
+  (aspect_id, aspect_body) = db.get_random('aspects')
+  session['review_id'] = review_id
+  session['aspect_id'] = aspect_id
+  return render_template(
+    "index.html",
+    film_name=film_name,
+    review=text_body,
+    aspect=aspect_body
+  )
 
 
 @app.route('/yes_clicked', methods=['POST'])
 def yes_clicked():
   retrieve_action(1)
-  return review_page()
+  return redirect('/')
 
 
 @app.route('/no_clicked', methods=['POST'])
 def no_clicked():
   retrieve_action(0)
-  return review_page()
+  return redirect('/')
 
 
 @app.route('/absence_clicked', methods=['POST'])
 def absence_clicked():
   retrieve_action(2)
-  return review_page()
+  return redirect('/')
+
+
+@app.route('/skip', methods=['POST'])
+def skip():
+  return redirect('/')
 
 
 def main():

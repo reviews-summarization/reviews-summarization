@@ -6,9 +6,7 @@ from pathlib import Path
 import mysql.connector
 
 ASPECTS = [
-  'Сложность сюжета',
-  'Развитие персонажа',
-  'Операторская работа',
+  'Режиссерская работа',
   'Саундтрек/музыка',
   'Актерская игра',
   'Визуальные эффекты',
@@ -16,7 +14,6 @@ ASPECTS = [
   'Раскрытие темы',
   'Оригинальность сюжета',
   'Юмор',
-  'Интрига/напряжение',
   'Дизайн постановки/костюмов',
 ]
 
@@ -26,11 +23,11 @@ def load_reviews(cnx):
   cursor = cnx.cursor()
   new_data = []
   for k, v in data.items():
-    for x in v[:min(len(v), 100)]:
-      new_data.append((int(k), x, str(uuid.uuid4())))
+    for x in v["reviews"][:min(len(v), 100)]:
+      new_data.append((int(k), v["name"], x, str(uuid.uuid4())))
   for x in new_data:
     cursor.execute(
-      "INSERT INTO reviews (film_id, review_body, id) VALUES (%s, %s, %s)",
+      "INSERT INTO reviews (film_id, film_name, review_body, id) VALUES (%s, %s, %s, %s)",
       x
     )
   cnx.commit()

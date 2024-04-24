@@ -38,14 +38,14 @@ class Database:
 
 db = Database()
 def review_page():
-  (_, text_body, review_id) = db.get_random('reviews')
+  (_, film_name, text_body, review_id) = db.get_random('reviews')
   (aspect_id, aspect_body) = db.get_random('aspects')
   session['review_id'] = review_id
   session['aspect_id'] = aspect_id
-  return render_template("index.html", review=text_body, aspect=aspect_body)
+  return render_template("index.html", film_name=film_name, review=text_body, aspect=aspect_body)
 
 
-def retrieve_action(yes_clicked):
+def retrieve_action(number):
   db.add_record((
     session['review_id'],
     session['aspect_id'],
@@ -61,13 +61,19 @@ def index():
 
 @app.route('/yes_clicked', methods=['POST'])
 def yes_clicked():
-  retrieve_action(True)
+  retrieve_action(1)
   return review_page()
 
 
 @app.route('/no_clicked', methods=['POST'])
 def no_clicked():
-  retrieve_action(False)
+  retrieve_action(0)
+  return review_page()
+
+
+@app.route('/absence_clicked', methods=['POST'])
+def absence_clicked():
+  retrieve_action(2)
   return review_page()
 
 

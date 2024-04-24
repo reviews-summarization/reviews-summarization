@@ -59,6 +59,49 @@ class Kinopoisk:
     browser.quit()
     return film_ids
 
+  def film_name(self, film_id):
+    browser = webdriver.Chrome()
+
+    def interceptor(request):
+      for key, value in self.headers.items():
+        request.headers[key] = value
+      del request.headers['Referer']
+      request.headers['Referer'] = \
+        'https://www.kinopoisk.ru/lists/movies/top250/'
+
+    browser.request_interceptor = interceptor
+    page_url = f'https://www.kinopoisk.ru/film/{film_id}'
+    browser.get(page_url)
+
+    urls = browser.find_elements(
+      By.XPATH, '//span[@data-tid]'
+    )
+
+    titles = []
+
+    def check_string(s):
+      for el in s:
+        if el < '0' or el > '9':
+          return True
+      return False
+
+    for url in urls:
+      if url.text and check_string(url.text): titles.append(url.text)
+
+    return titles[0]
+
+  def get_titles(self):
+    titles = {}
+    for id, reviews in json.loads(Path("data.json").read_text()).items():
+      titles[id] = {
+        "name": self.film_name(id),
+        "reviews": reviews
+      }
+
+    Path("data.json").write_text(json.dumps(titles, ensure_ascii=False))
+
+    return
+
 
   def _get_reviews(self, film_id, page_number):
     method = f'film/{film_id}/reviews/page/{page_number}/perpage/100/'
@@ -94,6 +137,8 @@ def parse_args():
 
 def main(args):
   kp = Kinopoisk(args.cookie_path.read_text().strip())
+  kp.get_titles()
+  return
   top_films_ids = kp.top_films()
   all_reviews = {}
   for id_film in top_films_ids:

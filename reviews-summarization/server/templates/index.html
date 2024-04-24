@@ -14,19 +14,24 @@
 
     <table class="center" style="width:80%" >
         <tr>
+            <th style="width:55%">Фильм</th>
             <th style="width:55%">Отзыв</th>
             <th style="width:20%">Аспект</th>
             <th style="width:25%">Наличие</th>
         </tr>
         <tr>
+            <td> {{film_name}} </td>
             <td> {{review}} </td>
             <td> {{aspect}} </td>
             <td>
                 <form action="/yes_clicked" method="post">
-                    <button type="submit">да</button>
+                    <button type="submit">хорошо</button>
                 </form>
                 <form action="/no_clicked" method="post">
-                    <button type="submit">нет</button>
+                    <button type="submit">плохо</button>
+                </form>
+                <form action="/absence_clicked" method="post">
+                    <button type="submit">отсутствует</button>
                 </form>
             </td>
         </tr>

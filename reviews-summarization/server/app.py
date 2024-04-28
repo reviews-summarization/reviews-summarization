@@ -1,6 +1,5 @@
 import os
 import secrets
-import functools
 import logging
 
 import mysql.connector
@@ -10,19 +9,27 @@ from flask import Flask, render_template, redirect, request, url_for, session  #
 app = Flask(__name__)
 app.secret_key = secrets.token_hex()
 
+class DatabaseConnection:
+  def __init__(self, **kwargs) -> None:
+    self.kwargs = kwargs
+
+  def __enter__(self):
+    self.cnx = mysql.connector.connect(**self.kwargs)
+    return self.cnx
+
+  def __exit__(self, *args, **kwargs):
+    self.cnx.close()
+
+
 class Database:
-  @functools.cached_property
-  def cnx(self):
-    return mysql.connector.connect(
-      user=os.environ.get('DB_USER'),
-      database=os.environ.get('DB_NAME'),
-      passwd=os.environ.get('DB_PASSW')
-    )
+  def __init__(self, **db_config):
+    self.db_config = db_config
 
   def query(self, *args, **kwargs):
-    cursor = self.cnx.cursor()
-    cursor.execute(*args, **kwargs)
-    return cursor.fetchall()[0]
+    with DatabaseConnection(**self.db_config) as cnx:
+      cursor = cnx.cursor()
+      cursor.execute(*args, **kwargs)
+      return cursor.fetchall()[0]
 
   def get_random(self, table):
     return self.query(f'SELECT * FROM {table} ORDER BY RAND( ) LIMIT 1;')
@@ -31,15 +38,20 @@ class Database:
     add_review = (
       "INSERT INTO answers (review, aspect, answer, ip) VALUES (%s, %s, %s, %s)"
     )
-    cursor = self.cnx.cursor()
-    cursor.execute(add_review, record)
-    self.cnx.commit()
+    with DatabaseConnection(**self.db_config) as cnx:
+      cnx.cursor().execute(add_review, record)
+      cnx.commit()
 
 
-db = Database()
+db = Database(
+  user=os.environ.get('DB_USER'),
+  database=os.environ.get('DB_NAME'),
+  passwd=os.environ.get('DB_PASSW'),
+  raise_on_warnings=True
+)
 
 
-def retrieve_action(number):
+def record_action(number):
   db.add_record((
     session['review_id'],
     session['aspect_id'],
@@ -64,19 +76,19 @@ def index():
 
 @app.route('/yes_clicked', methods=['POST'])
 def yes_clicked():
-  retrieve_action(1)
+  record_action(1)
   return redirect('/')
 
 
 @app.route('/no_clicked', methods=['POST'])
 def no_clicked():
-  retrieve_action(0)
+  record_action(0)
   return redirect('/')
 
 
 @app.route('/absence_clicked', methods=['POST'])
 def absence_clicked():
-  retrieve_action(2)
+  record_action(2)
   return redirect('/')
 
 

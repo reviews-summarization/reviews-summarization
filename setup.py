@@ -29,7 +29,7 @@ setup(
       #server
       "flask",
       "mysql-connector-python",
-      "waitress"
+      "waitress",
     ],
   }
 )

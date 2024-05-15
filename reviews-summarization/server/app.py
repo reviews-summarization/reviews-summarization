@@ -1,71 +1,54 @@
-import os
+import random
 import secrets
 import logging
 
-import mysql.connector
+import databse
+import honeypots
+
 import waitress
 from flask import Flask, render_template, redirect, request, url_for, session  # pylint: disable=unused-import
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex()
-
-class DatabaseConnection:
-  def __init__(self, **kwargs) -> None:
-    self.kwargs = kwargs
-
-  def __enter__(self):
-    self.cnx = mysql.connector.connect(**self.kwargs)
-    return self.cnx
-
-  def __exit__(self, *args, **kwargs):
-    self.cnx.close()
+db = databse.make_database()
 
 
-class Database:
-  def __init__(self, **db_config):
-    self.db_config = db_config
-
-  def query(self, *args, **kwargs):
-    with DatabaseConnection(**self.db_config) as cnx:
-      cursor = cnx.cursor()
-      cursor.execute(*args, **kwargs)
-      return cursor.fetchall()[0]
-
-  def get_random(self, table):
-    return self.query(f'SELECT * FROM {table} ORDER BY RAND( ) LIMIT 1;')
-
-  def add_record(self, record):
-    add_review = (
-      "INSERT INTO answers (review, aspect, answer, ip) VALUES (%s, %s, %s, %s)"
-    )
-    with DatabaseConnection(**self.db_config) as cnx:
-      cnx.cursor().execute(add_review, record)
-      cnx.commit()
+@app.route('/yes_clicked', methods=['POST'])
+def yes_clicked():
+  _record_action(1)
+  return redirect('/')
 
 
-db = Database(
-  user=os.environ.get('DB_USER'),
-  database=os.environ.get('DB_NAME'),
-  passwd=os.environ.get('DB_PASSW'),
-  raise_on_warnings=True
-)
+@app.route('/no_clicked', methods=['POST'])
+def no_clicked():
+  _record_action(0)
+  return redirect('/')
 
 
-def record_action(number):
-  db.add_record((
-    session['review_id'],
-    session['aspect_id'],
-    number,
-    request.environ.get('REMOTE_ADDR', request.remote_addr)
-  ))
+@app.route('/absence_clicked', methods=['POST'])
+def absence_clicked():
+  _record_action(2)
+  return redirect('/')
+
+
+@app.route('/skip', methods=['POST'])
+def skip():
+  return redirect('/')
 
 
 @app.route('/')
 def index():
-  (_, film_name, text_body, review_id) = db.get_random('reviews')
-  (aspect_id, aspect_body) = db.get_random('aspects')
-  session['review_id'] = review_id
-  session['aspect_id'] = aspect_id
+  #TODO: Use for user identification
+  if 'session_id' not in session:
+    session['session_id'] = secrets.token_hex()
+  if random.random() < 0.1:
+    (review_id, aspect_id) = honeypots.Honeypots().get_random()
+    (_, film_name, text_body, review_id) = db.get('reviews', review_id)
+    (aspect_id, aspect_body) = db.get('aspects', aspect_id)
+  else:
+    (_, film_name, text_body, review_id) = db.get_random('reviews')
+    (aspect_id, aspect_body) = db.get_random('aspects')
+  session.update({'review_id': review_id, 'aspect_id': aspect_id})
   return render_template(
     "index.html",
     film_name=film_name,
@@ -74,27 +57,14 @@ def index():
   )
 
 
-@app.route('/yes_clicked', methods=['POST'])
-def yes_clicked():
-  record_action(1)
-  return redirect('/')
-
-
-@app.route('/no_clicked', methods=['POST'])
-def no_clicked():
-  record_action(0)
-  return redirect('/')
-
-
-@app.route('/absence_clicked', methods=['POST'])
-def absence_clicked():
-  record_action(2)
-  return redirect('/')
-
-
-@app.route('/skip', methods=['POST'])
-def skip():
-  return redirect('/')
+def _record_action(number):
+  db.add_record((
+    session['review_id'],
+    session['aspect_id'],
+    number,
+    request.environ.get('REMOTE_ADDR', request.remote_addr),
+    session['session_id']
+  ))
 
 
 def main():

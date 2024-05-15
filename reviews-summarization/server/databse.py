@@ -47,7 +47,5 @@ def make_database():
     user=os.environ.get('DB_USER'),
     database=os.environ.get('DB_NAME'),
     passwd=os.environ.get('DB_PASSW'),
-    host='91.77.160.163',
-    port='3306',
     raise_on_warnings=True
   )

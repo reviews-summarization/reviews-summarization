@@ -2,7 +2,7 @@ import random
 import secrets
 import logging
 
-import databse
+import database
 import honeypots
 
 import waitress
@@ -33,7 +33,7 @@ ASPECT_TEMPLATE = """
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex()
-db = databse.make_database()
+db = database.make_database()
 
 
 @app.route('/submit', methods=['POST', 'GET'])
@@ -59,7 +59,6 @@ def _make_aspects():
 
 @app.route('/')
 def index():
-  #TODO: Use for user identification
   if 'session_id' not in session:
     session['session_id'] = secrets.token_hex()
   if random.random() < 0.1:

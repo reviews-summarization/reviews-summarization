@@ -9,36 +9,24 @@
     <title>Reviews / aspects</title>
 </head>
 <body>
-    <h1>Разметка отзывов</h1>
-    <p>Вам предлагается прочитать отзыв и отметить есть ли аспект в нем</p>
+    <div style="width: 70%; margin-left: auto; margin-right: auto; margin-top: 5%;">
+        <h2 style="text-align: left;">{{film_name}}</h2>
+        <div style="text-align: left;">
+        <i>Вам предлагается прочитать отзыв и отметить есть ли аспект в нем</i>
+        </div>
+        <p style="text-align: left;"> {{review}} </p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <form method="post" action="/submit" style="width: 100%; margin: auto; display: flex; flex-direction: column;">
 
-    <table class="center" style="width:80%" >
-        <tr>
-            <th style="width:20%">Фильм</th>
-            <th style="width:55%">Отзыв</th>
-            <th style="width:20%">Аспект</th>
-            <th style="width:20%">Наличие</th>
-        </tr>
-        <tr>
-            <td> {{film_name}} </td>
-            <td> {{review}} </td>
-            <td> {{aspect}} </td>
-            <td>
-                <form action="/yes_clicked" method="post">
-                    <button type="submit">хорошо</button>
-                </form>
-                <form action="/no_clicked" method="post">
-                    <button type="submit">плохо</button>
-                </form>
-                <form action="/absence_clicked" method="post">
-                    <button type="submit">отсутствует</button>
-                </form>
-                <form action="/skip" method="post">
-                    <button type="submit">пропустить</button>
-                </form>
-            </td>
-        </tr>
-    </table>
+            {{aspects | safe}}
+
+            <button type="submit" style="height: 20px;">Далее</button>
+            </form>
+        </div>
+        <form action="/skip" method="post" style="width: 100%; margin: auto; display: flex; flex-direction: column; margin-top: 10px;">
+            <button type="submit" style="height: 20px;">Пропустить</button>
+        </form>
+    </div>
 </body>
 </html>
 

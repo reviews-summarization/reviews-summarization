@@ -52,9 +52,9 @@ class Database:
 
 def make_database():
   return Database(
-    user=os.environ.get('DB_USER'),
-    database=os.environ.get('DB_NAME'),
-    passwd=os.environ.get('DB_PASSW'),
+    user=os.environ.get('DB_USER', 'masha'),
+    database=os.environ.get('DB_NAME', 'reviews'),
+    passwd=os.environ.get('DB_PASSW', 'masha123'),
     host=os.environ.get('DB_HOST', '91.77.160.163'),
     port=os.environ.get('DB_PORT', '3306'),
     raise_on_warnings=True

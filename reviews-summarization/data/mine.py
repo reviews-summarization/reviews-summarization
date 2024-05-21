@@ -23,6 +23,10 @@ PROMPT = """
 """
 
 
+PROMPT_YA = """
+Ответь присутствует ли аспект "{aspect}" в следующем отзыве на фильм:
+"""
+
 def ask_gpt4(aspect, review):
   print(PROMPT.format(aspect=aspect, review=review))
   r = requests.post(
@@ -56,9 +60,17 @@ def ask_alice(aspect, review):
         "stream": False,
         "maxTokens": "2000"
       },
-      "messages": [{
+      "messages": [
+        {
+          "role": "system",
+          "text":
+            f'Ты кинокритик, твоя задача отвечать на вопросы присутствует ли аспект "{review}"' \
+            'в отзыве на фильм. У тебя есть следующие варианты ответа: "Хвалят", "Ругают", ' \
+            '"Отсутствует", твой ответ должен иметь только одно слово' 
+        },
+        {
           "role": "user",
-          "text": PROMPT.format(aspect=aspect, review=review),
+          "text": PROMPT_YA.format(aspect=aspect),
       }]
     }, ensure_ascii=False).encode('utf-8'),
     headers={
@@ -67,6 +79,7 @@ def ask_alice(aspect, review):
     },
     timeout=300
   )
+  print(r.json())
   return r.json()['result']['alternatives'][0]['message']['text'] \
     if r.status_code == 200 \
     else None
@@ -80,19 +93,20 @@ def get_random(db):
 
 def main():
   db = database.make_database()
-  for _ in range(10):
+  for _ in range(1000):
     ((review_id, text_body), (aspect_id, aspect_body)) = get_random(db)
     # answer = ask_gpt4(aspect_body, text_body).strip()
     answer = ask_alice(aspect_body, text_body)
+    print(answer)
     if not answer: continue
     answer = answer.strip()
-    print(answer)
     answers = {
       'Хвалят': 1,
       'Ругают': 0,
       'Отсутствует': 2
     }
     if answer not in answers: continue
+    print('recording')
     db.add_record((
       review_id,
       aspect_id,

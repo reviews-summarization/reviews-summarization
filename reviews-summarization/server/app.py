@@ -6,7 +6,7 @@ import database
 import honeypots
 
 import waitress
-from flask import Flask, render_template, redirect, request, url_for, session  # pylint: disable=unused-import
+from flask import Flask, render_template, redirect, request, session  # pylint: disable=unused-import
 
 
 ASPECT_STATES = {

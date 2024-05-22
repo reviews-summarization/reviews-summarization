@@ -61,7 +61,7 @@ def _make_aspects():
 def index():
   if 'session_id' not in session:
     session['session_id'] = secrets.token_hex()
-  if random.random() < 0.1:
+  if random.random() < 0.2:
     (review_id, _) = honeypots.Honeypots().get_random()
     (_, film_name, text_body, review_id) = db.get('reviews', review_id)
   else:

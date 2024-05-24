@@ -34,21 +34,21 @@ class Honeypots:
 def check_user():
   bad_users = {}
 
-  hyneypots = Honeypots()
+  honeypots = Honeypots()
   db = database.make_database()
 
-  honeypot_reviews = hyneypots.get_honeypot_reviews()
+  honeypot_reviews = honeypots.get_honeypot_reviews()
   for (review, aspect, answer, ip, session) in db.list_query(f'SELECT * FROM answers;'):
     if review in honeypot_reviews:
-      wrong_all_hynepots = bad_users.get(session, (0, 0))
-      wrong_all_hynepots[1] += 1
-      ans = hyneypots.right_answer(review, aspect)
+      wrong_all_honepots = bad_users.get(session, [0, 0])
+      wrong_all_honepots[1] += 1
+      ans = honeypots.right_answer(review, aspect)
       if answer != ans and ans != None:
-        wrong_all_hynepots[0] += 1
-      bad_users[session] = wrong_all_hynepots
+        wrong_all_honepots[0] += 1
+      bad_users[session] = wrong_all_honepots
 
   return bad_users
 
 
 if __name__ == '__main__':
-  print(check_user())
+  print(check_user(), len(check_user()))

@@ -30,6 +30,9 @@ setup(
       "flask",
       "mysql-connector-python",
       "waitress",
+
+      #bot
+      "python-telegram-bot",
     ],
   }
 )

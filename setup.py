@@ -33,6 +33,9 @@ setup(
 
       #bot
       "python-telegram-bot",
+
+      #ml
+      "catboost",
     ],
   }
 )

@@ -33,6 +33,7 @@ setup(
 
       #bot
       "python-telegram-bot",
+      "python-dotenv"
 
       #ml
       "catboost",

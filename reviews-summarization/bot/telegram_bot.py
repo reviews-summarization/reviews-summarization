@@ -1,14 +1,9 @@
 import logging
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 import sys
 from pathlib import Path
-from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder,
-    ContextTypes,
-    CommandHandler,
-    MessageHandler,
-    filters
-)
+from catboost import CatBoostClassifier, Pool
 
 
 PATH = (Path(__file__).parents[1] / 'data').resolve()
@@ -39,6 +34,10 @@ async def reader(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   await context.bot.send_message(chat_id=update.effective_chat.id, text=film_id)
 
+    from_file = CatBoostClassifier()
+    from_file.load_model("/Users/sobolevanikolaevna/Downloads/ml.uu")
+
+    #from_file.predict(reviews)
 
 
 if __name__ == '__main__':

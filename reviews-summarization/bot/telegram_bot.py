@@ -4,6 +4,8 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Messa
 import sys
 from pathlib import Path
 from catboost import CatBoostClassifier, Pool
+from dotenv import load_dotenv
+import os
 
 PATH = (Path(__file__).parents[1] / 'data').resolve()
 sys.path.insert(0, str(PATH))
@@ -33,16 +35,14 @@ async def reader(update: Update, context: ContextTypes.DEFAULT_TYPE):
     kp = Kinopoisk(args.cookie_path.read_text().strip())
 
     reviews = []
-    reviews = kp.get_reviews(id_film)
+    reviews = kp.get_reviews(film_id)
 
-    from_file = CatBoostClassifier()
-    from_file.load_model("/Users/sobolevanikolaevna/Downloads/ml.uu")
-
-    #from_file.predict(reviews)
 
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token('6477280252:AAH3wU2QOEuRFa9JZelVU1AKOA4LzIAe4OE').build()
+
+    load_dotenv()
+    application = ApplicationBuilder().token(os.getenv('TOKEN')).build()
 
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)

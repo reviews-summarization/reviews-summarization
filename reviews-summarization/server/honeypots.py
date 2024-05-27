@@ -1,6 +1,6 @@
 import random
-import database
 from pathlib import Path
+import database
 
 class Honeypots:
   def __init__(
@@ -38,12 +38,13 @@ def check_user():
   db = database.make_database()
 
   honeypot_reviews = honeypots.get_honeypot_reviews()
-  for (review, aspect, answer, ip, session) in db.list_query(f'SELECT * FROM answers;'):
+  query = 'SELECT * FROM answers;'
+  for (review, aspect, answer, session) in db.list_query(query):
     if review in honeypot_reviews:
       wrong_all_honepots = bad_users.get(session, [0, 0])
       wrong_all_honepots[1] += 1
       ans = honeypots.right_answer(review, aspect)
-      if answer != ans and ans != None:
+      if answer != ans and ans is not None:
         wrong_all_honepots[0] += 1
       bad_users[session] = wrong_all_honepots
 

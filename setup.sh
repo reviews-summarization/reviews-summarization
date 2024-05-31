@@ -12,9 +12,8 @@ if [ "$GIT_ROOT" != "$CURRENT_DIR" ]; then
     exit 1
 fi
 
-/usr/bin/python3 -m pip install pre-commit
-pre-commit install
-
 /usr/bin/python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -e ".[dev]"
+pre-commit install
+

@@ -1,33 +1,32 @@
 import random
+import sys
 import secrets
 import logging
+from pathlib import Path
 
+
+sys.path.append(str(Path(__file__).parents[1] / 'data'))
 import database
 import honeypots
 
 import waitress
-from flask import Flask, render_template, redirect, request, session  # pylint: disable=unused-import
+from flask import Flask, render_template, redirect, request, session
 
 
-ASPECT_STATES = {
-  'good': 1,
-  'bad': 0,
-  'absence': 2,
-  'skip': 3,
-}
+ASPECT_STATES = {'good': 1, 'bad': 0, 'absence': 2, 'skip': 3}
 ASPECT_TEMPLATE = """
 <div style="display: flex; justify-content: space-between; align-items: center;">
-    <div style="flex-grow: 1;">
-        <p style="text-align: left;">{name}</p>
-    </div>
-    <div style="flex-grow: 0;text-align: right;">
-        <select name="{aspect_id}">
-            <option value="good">Хорошо</option>
-            <option value="bad">Плохо</option>
-            <option value="absence">Отсутствует</option>
-            <option value="skip" selected="">Пропустить</option>
-        </select>
-    </div>
+  <div style="flex-grow: 1;">
+    <p style="text-align: left;">{name}</p>
+  </div>
+  <div style="flex-grow: 0;text-align: right;">
+    <select name="{aspect_id}">
+      <option value="good">Хорошо</option>
+      <option value="bad">Плохо</option>
+      <option value="absence">Отсутствует</option>
+      <option value="skip" selected="">Пропустить</option>
+    </select>
+  </div>
 </div>
 """
 
@@ -76,7 +75,7 @@ def index():
 
 
 def _record_action(aspect_id, number):
-  db.add_record((
+  db.add_record('answers', (
     session['review_id'],
     aspect_id,
     number,
